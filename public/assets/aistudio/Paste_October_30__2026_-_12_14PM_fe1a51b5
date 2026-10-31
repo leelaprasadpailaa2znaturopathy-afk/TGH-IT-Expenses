@@ -1,0 +1,1741 @@
+IT Expense & Resource Management System
+Product Requirements Document (PRD)
+
+Version: 1.0
+Prepared: October 2026
+Product: IT Expense & Resource Management System
+Department: IT
+Primary Database: MongoDB
+Application Type: Web-based application
+Deployment: Online and local office environment
+Primary Currency: INR (₹)
+Secondary Currency: USD ($)
+Financial Year: April 1 – March 31
+Status: Approved scope for development planning
+
+1. Product Overview
+1.1 Product Vision
+
+The IT Expense & Resource Management System is a centralized web application designed to manage, monitor, record, categorize and analyze all IT department expenses, purchases, invoices, subscriptions, assets and inventory.
+
+The application will replace the existing manual Excel-based expense tracking process with a structured digital management system backed by MongoDB.
+
+The application must maintain a single centralized source of truth while providing separate live pages for individual expense categories.
+
+For example, when a new Courier Labels invoice is uploaded:
+
+The system extracts the invoice information.
+It identifies the relevant products.
+It categorizes the transaction.
+It stores the transaction in MongoDB.
+It displays the purchase in the Courier Labels page.
+It updates the centralized transaction ledger.
+It updates stock quantities when the goods are received.
+It updates the vendor's purchase history.
+It updates the dashboard and financial reports.
+It makes the transaction available for Excel export.
+
+Users must not need to enter the same information multiple times.
+
+1.2 Primary Objectives
+Replace manual expense spreadsheets with a centralized application.
+Maintain individual pages for different expense categories.
+Store all records in MongoDB.
+Automatically categorize uploaded invoices and bills.
+Calculate GST, totals and currency conversions.
+Maintain purchase, payment and approval histories.
+Track consumables and fixed assets.
+Manage recurring subscriptions and renewal dates.
+Provide real-time dashboards and reports.
+Import existing Excel records.
+Export reports in the original Excel format and a professional format.
+Support secure online and local access.
+Maintain complete audit history.
+1.3 Core Product Principle
+
+One database, one transaction record, multiple live views.
+
+The application must not create separate, duplicated expense records for different category pages.
+
+Each category page, master ledger, dashboard and report must retrieve the appropriate information from the same underlying MongoDB transactions.
+
+2. Target Users
+
+The system will support three primary user roles.
+
+2.1 Administrator
+
+The administrator has complete access to the application.
+
+Responsibilities:
+
+Manage users and permissions.
+Create and manage expenses.
+Upload invoices.
+Approve or override purchase approvals.
+Manage vendors.
+Configure GST rates.
+Configure currency settings.
+Manage inventory and assets.
+Manage subscriptions.
+View all reports.
+Import and export Excel files.
+Manage application settings.
+Access audit logs.
+Manage backups.
+2.2 Employee
+
+Responsibilities:
+
+Create purchase requests.
+Enter expense details.
+Upload invoices.
+Submit purchases for approval.
+View their own transactions.
+View assigned assets.
+View permitted inventory information.
+Track approval status.
+2.3 Approver / Manager
+
+Responsibilities:
+
+Review submitted purchase requests.
+View invoice attachments.
+Verify purchase details.
+Approve or reject requests.
+Add approval comments.
+View assigned department expenses.
+Track pending approvals.
+2.4 Permission Requirements
+
+Permissions must be controlled by the backend, not just by hiding frontend buttons.
+
+An administrator may override an approval, but the override must be recorded in the audit history.
+
+3. Application Navigation and Page Structure
+
+The application must have a professional admin dashboard with a sidebar navigation system.
+
+3.1 Main Navigation
+Dashboard
+All Transactions
+Expense Categories
+Approvals
+Bill Upload / Import
+Vendors
+Inventory
+Assets
+Subscriptions
+Payments
+Reports
+Excel Import / Export
+Notifications
+Audit History
+User Management
+Settings
+3.2 Individual Expense Category Pages
+
+The following pages must be created as independent views.
+
+Page 1: Courier Labels
+
+Display all Courier Labels purchase transactions.
+
+Required columns:
+
+Column	Description
+S.No	Automatic serial number
+Date of Order	Purchase date
+Product Name	Courier Labels
+Quantity Units	Configurable packaging/unit information
+Quantity Left	Available stock or manually maintained balance
+Total Rolls	Rolls or units per package
+Quantity Ordered	Purchased quantity
+Unit Price (INR)	Price per unit
+Total Cost (INR)	Taxable purchase amount
+Total Amount	Final invoice amount
+Remarks / Status	Reorder, Available, Not Required, etc.
+Invoice	Invoice reference or attachment
+
+The page must support:
+
+Purchase history.
+Available stock.
+Quantity ordered.
+Quantity remaining.
+Stock received.
+Stock issued.
+Reorder status.
+Purchase price history.
+Invoice access.
+Vendor information.
+Excel export.
+Page 2: Wax Rolls
+
+Wax Rolls must have their own independent product page.
+
+Required columns:
+
+Column	Description
+S.No	Serial number
+Date of Order	Purchase date
+Product Name	Wax Rolls
+Quantity Left	Available stock
+Quantity Ordered	Purchased quantity
+Unit Price (INR)	Unit price
+Total Cost (INR)	Taxable amount
+Total Amount	Final invoice amount
+Remarks / Status	Availability or reorder status
+Invoice	Invoice reference
+
+Wax Rolls can also be displayed alongside Courier Labels in a combined consumables report.
+
+Page 3: Barcode Rolls
+
+Required columns:
+
+Column	Description
+S.No	Serial number
+Date of Order	Purchase date
+Product Name	Barcode Roll
+Quantity Unit	Packaging/unit information
+Quantity Left	Remaining stock
+Quantity Ordered	Purchased quantity
+Unit Price (INR)	Unit price
+Total Cost (INR)	Taxable cost
+Total Amount	Final invoice amount
+Remarks / Status	Reorder, Urgent, Available
+Invoice	Invoice reference
+
+The page should also contain a separate Barcode Wax Rolls subsection or linked product view.
+
+Page 4: Barcode Wax Rolls
+
+This page should contain:
+
+Purchase date.
+Product name.
+Quantity left.
+Quantity ordered.
+Unit price.
+Taxable amount.
+Final invoice amount.
+Remarks.
+Invoice reference.
+Page 5: Render Hosting
+
+Dedicated subscription tracking page.
+
+Required table:
+
+Column	Description
+S.No	Serial number
+Product	Render
+Purchase Month	Billing month
+Amount (USD)	Original subscription amount
+Amount (INR)	Converted amount
+Exchange Rate	Conversion rate
+Notes	Initial license, renewal, monthly subscription
+Status	Paid, Pending, Failed, Cancelled
+Invoice	Invoice reference
+Payment Date	Actual payment date
+Renewal Date	Next renewal
+
+The page must support monthly subscription history, renewal reminders, payment status and price comparisons.
+
+Page 6: MongoDB
+
+Dedicated database subscription page.
+
+Required columns:
+
+S.No.
+Product.
+Purchase Month.
+Amount (USD).
+Amount (INR).
+Exchange Rate.
+Notes.
+Status.
+Invoice.
+Payment Date.
+Renewal Date.
+
+The page must calculate total USD spending, total INR spending and subscription trends.
+
+Page 7: Other Bills
+
+This page must display all purchases that do not belong to the dedicated categories.
+
+Examples:
+
+Computers.
+Laptops.
+RAM.
+Monitors.
+Accessories.
+UPS.
+Printers.
+Toner and cartridges.
+Mobile phones.
+Pendrives.
+AI subscriptions.
+TrackingMore.
+Minop solutions.
+Other software.
+Other IT purchases.
+
+Required columns:
+
+Column	Description
+S.No	Serial number
+Product	Item or service
+Purchase Month	Purchase date
+Without Tax	Taxable amount
+Tax Rate	Applicable GST rate
+Tax Amount	Calculated or invoice tax
+Grand Total	Final invoice amount
+Vendor	Supplier
+Location / Invoice	Invoice attachment or reference
+Status	Paid, Pending, Approved, etc.
+
+The application must allow additional categories to be created by administrators.
+
+Page 8: All Transactions
+
+This is the centralized master ledger.
+
+It must display every expense transaction, irrespective of category.
+
+The master ledger must contain all original spreadsheet fields:
+
+Responsible Person
+Date
+Item / Service Purchased
+Purchased By
+Designation
+Quantity
+Unit Price
+Without Tax
+Total Amount
+Vendor / Supplier
+Purpose / Justification
+Payment Method
+Invoice / Bill No
+Approved By
+Approval Date
+Remarks
+
+Additional internal fields may include:
+
+Category.
+Subcategory.
+Currency.
+Exchange rate.
+GST mode.
+GST amount.
+Payment status.
+Approval status.
+Receipt status.
+Invoice attachment.
+Created by.
+Updated by.
+
+The master ledger must support global search, filters, sorting, pagination and Excel export.
+
+4. Centralized Data Architecture
+4.1 Database
+
+Database name:
+
+it_expense_management
+
+MongoDB will act as the central source of truth.
+
+4.2 Main Collections
+Collection	Purpose
+users	User accounts and roles
+expenses	All purchase transactions
+vendors	Supplier information
+categories	Expense categories
+products	Product and consumable definitions
+approvals	Approval history
+invoices	Invoice metadata and attachments
+payments	Payment transactions
+inventory	Current stock balances
+inventory_transactions	Stock movements
+assets	Fixed asset records
+subscriptions	Recurring services
+subscription_payments	Subscription payment history
+gst_settings	GST configuration
+exchange_rates	Currency conversion history
+notifications	Application alerts
+audit_logs	User activity history
+import_jobs	Excel import history
+settings	Company and system configuration
+4.3 Expense Record Structure
+
+Each expense must have a unique identifier.
+
+Example:
+
+IT-EXP-2026-0001
+
+Suggested document structure:
+
+json
+{
+  "expenseNumber": "IT-EXP-2026-0001",
+  "purchaseDate": "2026-01-31",
+  "productName": "Barcode Rolls",
+  "category": "barcode-rolls",
+  "quantity": 60,
+  "unitPrice": 162.50,
+  "currency": "INR",
+  "exchangeRate": 1,
+  "taxMode": "exclusive",
+  "gstMethod": "automatic",
+  "gstRate": 18,
+  "taxableAmount": 9750,
+  "cgst": 877.50,
+  "sgst": 877.50,
+  "igst": 0,
+  "totalTax": 1755,
+  "totalAmount": 11505,
+  "vendorName": "PC Technologies",
+  "invoiceNumber": "PCTS/4672",
+  "paymentMethod": "bank",
+  "approvalStatus": "approved",
+  "paymentStatus": "paid",
+  "receivedStatus": "received",
+  "remarks": "Material Received"
+}
+
+
+This is an illustrative record. Production documents must also contain ObjectId references, creator information, timestamps and the necessary validation metadata.
+
+4.4 Category Mapping
+
+Each expense must have a category and optional subcategory.
+
+Examples:
+
+Courier Labels → Consumables → Courier Labels
+Wax Rolls → Consumables → Wax Rolls
+Barcode Rolls → Consumables → Barcode Rolls
+Barcode Wax Rolls → Consumables → Barcode Wax Rolls
+Render → Software / Hosting → Render
+MongoDB → Software / Database → MongoDB
+Computer Systems → Hardware → Computers
+Laptop → Hardware → Laptops
+TrackingMore → Software → Tracking Services
+Minop → Software → Biometric Services
+
+The system must allow administrators to modify category mappings without changing historical transaction identifiers.
+
+4.5 Data Relationships
+
+An expense may be linked to:
+
+One vendor.
+One or more products.
+One invoice.
+One or more payments.
+Multiple approval events.
+One or more inventory transactions.
+One or more asset records.
+
+A single invoice can contain multiple product lines.
+
+Therefore, the database must support invoice-level records and separate expense line items. This is essential for bills containing Courier Labels and Wax Rolls together.
+
+5. Automatic Bill Upload and Categorization
+5.1 Objective
+
+Users must be able to upload a bill or invoice without manually entering every field.
+
+Supported formats:
+
+PDF
+JPG
+JPEG
+PNG
+XLSX
+CSV
+5.2 Bill Upload Workflow
+User selects Upload Bill.
+User uploads the invoice.
+System validates the file.
+OCR or document extraction identifies the invoice details.
+AI-assisted categorization identifies the vendor and products.
+The system extracts product quantities and amounts.
+GST and currency details are identified.
+The application maps products to categories.
+Duplicate detection runs.
+The extracted data is shown in a preview.
+User corrects missing or uncertain fields.
+User confirms the upload.
+Backend validates and saves the records.
+Relevant category pages update.
+Master ledger updates.
+Dashboard and reports update.
+5.3 Automatic Categorization Rules
+
+The system should use multiple identification methods:
+
+Vendor matching.
+Product name matching.
+Invoice description matching.
+Previously saved product mappings.
+Invoice patterns.
+AI-assisted classification.
+
+Examples:
+
+Extracted product	Category
+Courier Labels	Courier Labels
+Wax Rolls	Wax Rolls
+Barcode Roll	Barcode Rolls
+Barcode Wax	Barcode Wax Rolls
+Render	Render Hosting
+MongoDB	MongoDB
+Computer Systems	Other Bills / Hardware
+TrackingMore	Other Bills / Software
+
+AI must not be permitted to silently finalize uncertain financial values.
+
+All extracted data must pass validation and user confirmation before being committed.
+
+5.4 Multiple Products in One Invoice
+
+If one invoice contains:
+
+50 Courier Labels.
+10 Wax Rolls.
+50 POS Rolls.
+
+The application must create separate product line items under one invoice.
+
+Each line item must appear on its corresponding category page while the invoice and complete purchase remain linked.
+
+6. Expense and GST Calculation Engine
+6.1 Calculation Modes
+
+The system must support:
+
+Automatic GST calculation.
+Manual GST entry.
+GST-inclusive pricing.
+GST-exclusive pricing.
+CGST and SGST.
+IGST.
+Zero-rated or no-GST purchases where applicable.
+Custom tax rates.
+Invoice-level rounding adjustments.
+6.2 GST Rates
+
+The application should allow configurable rates, including:
+
+0%
+5%
+12%
+18%
+28%
+Custom rates
+
+The applicable rate must be determined from the product/service classification and tax treatment.
+
+6.3 GST-Exclusive Formula
+
+Taxable Amount:
+
+Quantity × Unit Price
+
+GST Amount:
+
+Taxable Amount × GST Rate / 100
+
+Final Amount:
+
+Taxable Amount + GST Amount
+
+6.4 GST-Inclusive Formula
+
+Taxable Amount:
+
+Inclusive Amount / (1 + GST Rate / 100)
+
+GST Amount:
+
+Inclusive Amount - Taxable Amount
+
+6.5 Intra-State GST
+
+When applicable:
+
+CGST = GST / 2
+SGST = GST / 2
+6.6 Inter-State GST
+
+When applicable:
+
+IGST = Total GST
+
+The system must determine the tax type from the relevant supplier and recipient state information and allow authorized correction.
+
+6.7 Manual GST Mode
+
+Users must be able to enter invoice values directly.
+
+Fields:
+
+Taxable amount.
+CGST.
+SGST.
+IGST.
+Other tax or adjustment.
+Final invoice amount.
+
+The system must compare manual values with calculated values and flag differences.
+
+It must never silently overwrite invoice values.
+
+6.8 Financial Precision
+
+Financial calculations must use decimal-safe arithmetic.
+
+Currency values must be stored to appropriate precision.
+Exchange rates must preserve sufficient decimal places.
+Tax rounding must be configurable.
+Historical amounts must not be recalculated when settings change.
+
+The original invoice amount must always be preserved.
+
+7. Currency Conversion
+7.1 Supported Currencies
+INR
+USD
+Additional currencies configurable by administrator.
+7.2 Conversion Formula
+
+INR Amount:
+
+Original Currency Amount × Transaction Exchange Rate
+
+Example:
+
+USD amount: $44
+Exchange rate: ₹90.22
+INR equivalent: ₹3,969.68
+7.3 Requirements
+Store original currency.
+Store original amount.
+Store transaction exchange rate.
+Store converted INR amount.
+Preserve historical exchange rates.
+Support manual exchange rate entry.
+Optionally retrieve current exchange rates from a trusted provider.
+Never automatically change previously saved transaction values.
+
+Bank charges and foreign exchange fees should be recorded separately when available.
+
+Foreign software subscriptions must support applicable import-of-services tax treatment without assuming ordinary domestic GST handling.
+
+8. Inventory and Stock Management
+8.1 Inventory Products
+
+The initial inventory products include:
+
+Courier Labels.
+Wax Rolls.
+Barcode Rolls.
+Barcode Wax Rolls.
+POS Rolls.
+Other configurable consumables.
+8.2 Inventory Fields
+Product ID.
+Product Name.
+SKU.
+Category.
+Unit.
+Package quantity.
+Quantity received.
+Quantity issued.
+Quantity returned.
+Damaged quantity.
+Current stock.
+Minimum stock.
+Reorder level.
+Last purchase price.
+Average purchase price.
+Last purchase date.
+8.3 Stock Formula
+
+Current Stock:
+
+Opening Stock + Stock Received + Stock Returned - Stock Issued - Damaged Stock +/- Adjustments
+
+Stock must be updated through inventory transactions.
+
+8.4 Automatic Inventory Update
+
+Inventory must update only when a purchase is marked as received.
+
+Approval alone must not increase stock.
+
+For partial deliveries, only the received quantity should be added.
+
+8.5 Low-Stock Alerts
+
+The system must support:
+
+Minimum stock configuration.
+Reorder thresholds.
+Low-stock warnings.
+Urgent stock warnings.
+Reorder suggestions.
+Stock movement history.
+
+Status examples:
+
+Available.
+Low Stock.
+Reorder.
+Urgent.
+Out of Stock.
+Not Required.
+
+Status should be calculated from stock rules, but administrators may record a justified manual override.
+
+8.6 Inventory Issue Tracking
+
+When consumables are issued to an employee or department, the system must record:
+
+Product.
+Quantity issued.
+Issue date.
+Employee.
+Department.
+Issued by.
+Remarks.
+9. Asset Management
+
+The system must maintain a separate fixed-asset register.
+
+9.1 Supported Assets
+Desktop computers.
+Laptops.
+Mobile phones.
+Monitors.
+Printers.
+UPS devices.
+Networking equipment.
+Other IT equipment.
+9.2 Asset Information
+Asset ID.
+Asset name.
+Brand.
+Model.
+Serial number.
+Purchase date.
+Purchase price.
+Linked expense.
+Vendor.
+Invoice.
+Warranty expiry.
+Assigned employee.
+Department.
+Location.
+Asset status.
+9.3 Asset Status
+In Stock.
+Assigned.
+Under Maintenance.
+Damaged.
+Retired.
+Disposed.
+
+The application should maintain assignment and return history.
+
+10. Subscription Management
+10.1 Initial Subscription Services
+Render.
+MongoDB.
+OpenAI.
+Google AI Pro.
+TrackingMore.
+Other configurable services.
+10.2 Subscription Fields
+Subscription name.
+Vendor.
+Service category.
+Billing cycle.
+Original amount.
+Currency.
+Exchange rate.
+INR equivalent.
+Subscription start date.
+Last payment date.
+Next renewal date.
+Payment status.
+Subscription status.
+Invoice.
+Notes.
+10.3 Subscription Status
+Paid.
+Pending.
+Failed.
+Expired.
+Cancelled.
+10.4 Renewal Automation
+
+The application must:
+
+Generate recurring renewal reminders.
+Notify users before renewal.
+Create expected upcoming expense entries.
+Mark unpaid renewals as Pending.
+Link actual payments to subscription history.
+Track monthly and annual spending.
+Record subscription price changes.
+
+A generated expected expense must not be counted as a paid or actual expense until confirmed.
+
+10.5 Renewal Notifications
+
+Configurable notification intervals:
+
+30 days before.
+15 days before.
+7 days before.
+1 day before.
+On renewal date.
+11. Approval Management
+11.1 Approval Workflow
+
+Draft → Submitted → Under Review → Approved / Rejected.
+
+After approval, payment and receipt must be managed separately.
+
+11.2 Approval Information
+Expense ID.
+Submitted by.
+Submission date.
+Assigned approver.
+Approval status.
+Approval date.
+Comments.
+Rejection reason.
+Override history.
+11.3 Requirements
+Notifications for new submissions.
+Pending approval dashboard.
+Invoice preview.
+Approval and rejection actions.
+Approval comments.
+Approval history.
+Admin override.
+Permission validation.
+No approval of already cancelled transactions.
+
+The system must preserve historical approval decisions even when an expense is subsequently corrected.
+
+12. Invoice and Document Management
+
+The application must maintain invoice attachments and their references.
+
+12.1 Requirements
+Upload invoice.
+Preview invoice.
+Download invoice.
+Search by invoice number.
+Search by vendor.
+Link invoice to transactions.
+Store original uploaded file.
+Store document metadata.
+Track upload date and uploader.
+Detect possible duplicate invoices.
+12.2 Supported Document Types
+PDF.
+JPG.
+JPEG.
+PNG.
+XLSX.
+CSV.
+12.3 Duplicate Detection
+
+Duplicate checking must consider:
+
+Vendor.
+Invoice number.
+Invoice date.
+Invoice total.
+Document checksum.
+
+The system must identify possible duplicates and ask the user to review them.
+
+It should not automatically reject legitimate recurring bills with different invoice numbers.
+
+13. Centralized Transaction Ledger
+
+This is the most important operational page.
+
+All expenses, irrespective of category, must appear in the same master ledger.
+
+13.1 Required Features
+Global search.
+Category filtering.
+Vendor filtering.
+Date range filtering.
+Financial-year filtering.
+Approval status filtering.
+Payment status filtering.
+Currency filtering.
+Sorting.
+Pagination.
+Invoice preview.
+Transaction details.
+Excel export.
+13.2 Synchronization Requirements
+
+When an expense is created or updated:
+
+Save the record in MongoDB.
+Update the corresponding category view.
+Update the master ledger.
+Update vendor history.
+Update the appropriate inventory records when received.
+Update subscription history when applicable.
+Refresh dashboard statistics.
+Refresh relevant reports.
+
+A single transaction must not be inserted multiple times merely because it appears on multiple pages.
+
+The application should use server-side aggregation and reliable cache invalidation or real-time event updates to keep these views consistent.
+
+14. Dashboard and Analytics
+14.1 Dashboard KPIs
+Total IT expenses.
+Current month expenses.
+Financial-year expenses.
+Total GST.
+Total purchases.
+Pending approvals.
+Outstanding payments.
+Active subscriptions.
+Upcoming renewals.
+Total assets.
+Current inventory value.
+Low-stock products.
+14.2 Dashboard Charts
+Monthly expense trend.
+Financial-year comparison.
+Category-wise spending.
+Vendor-wise spending.
+GST breakdown.
+INR versus foreign currency expenses.
+Subscription cost trend.
+Inventory status.
+14.3 Dashboard Filters
+Date range.
+Month.
+Financial year.
+Category.
+Vendor.
+Payment status.
+Approval status.
+
+All dashboard data must come from the MongoDB transaction and related collections.
+
+No hardcoded dashboard values are permitted in production.
+
+15. Vendor Management and Analytics
+15.1 Vendor Information
+Vendor name.
+Vendor code.
+GSTIN.
+Address.
+State.
+Country.
+Email.
+Phone.
+Contact person.
+Payment terms.
+Status.
+15.2 Vendor History
+
+The vendor page must show:
+
+Total purchase count.
+Total purchase amount.
+Total payments.
+Outstanding balance.
+GST amount.
+Last purchase date.
+All invoices.
+Purchase history.
+Average purchase value.
+15.3 Purchase Price Comparison
+
+Users should be able to compare:
+
+Previous unit price.
+Current unit price.
+Previous supplier.
+Current supplier.
+Percentage change.
+Purchase frequency.
+
+Comparison must use matching product units and comparable tax treatments.
+
+16. Financial Reports
+16.1 Monthly Reports
+
+The application must generate:
+
+Total monthly expenses.
+Category-wise monthly expenses.
+Vendor-wise expenses.
+GST summary.
+Payment summary.
+Pending approvals.
+Subscription expenses.
+16.2 Financial-Year Reports
+
+Support financial years:
+
+FY 2024–25.
+FY 2025–26.
+FY 2026–27.
+Future financial years.
+
+Financial-year boundaries must automatically follow April 1 to March 31.
+
+16.3 Other Reports
+Category-wise reports.
+Vendor-wise reports.
+Product-wise reports.
+Inventory purchase reports.
+Asset purchase reports.
+Subscription reports.
+Outstanding payment reports.
+Approval reports.
+GST reports.
+Currency reports.
+
+Reports must allow date filters and downloadable Excel files.
+
+17. Excel Import System
+17.1 Purpose
+
+The application must import the existing IT expense spreadsheet into MongoDB.
+
+17.2 Import Process
+Upload Excel file.
+Identify headers.
+Read rows.
+Map spreadsheet columns.
+Normalize dates.
+Identify currency.
+Validate amounts.
+Detect missing values.
+Detect duplicates.
+Preview records.
+Show errors and warnings.
+Confirm import.
+Save records to MongoDB.
+Generate import summary.
+17.3 Historical Data Preservation
+
+The original spreadsheet values must be preserved.
+
+The application must not invent missing:
+
+Quantities.
+Unit prices.
+GST amounts.
+Invoice numbers.
+Exchange rates.
+Approval dates.
+
+Original data and normalized data must be distinguishable.
+
+17.4 Import Anomalies to Review
+
+The provided spreadsheet contains examples of:
+
+Mixed date formats.
+Blank quantities.
+Missing unit prices.
+INR and USD transactions.
+Possible duplicate or inconsistent dates.
+Different approval and purchase dates.
+Missing GST breakdowns.
+Inconsistent product descriptions.
+Potential amount discrepancies.
+
+The importer must flag these for manual review.
+
+An uncertain record must not be silently corrected.
+
+17.5 Import History
+
+Every import must maintain:
+
+Original file name.
+Uploaded by.
+Upload date.
+Total rows.
+Imported rows.
+Skipped rows.
+Failed rows.
+Duplicate rows.
+Error report.
+18. Excel Export System
+
+Two export formats are mandatory.
+
+18.1 Export Format A: Original Spreadsheet Format
+
+Filename:
+
+IT_Expenses_Original_Format.xlsx
+
+The file must preserve the existing column names and order:
+
+Responsible Person
+Date
+Item / Service Purchased
+Purchased By
+Designation
+Quantity
+Unit Price
+Without Tax
+Total Amount
+Vendor / Supplier
+Purpose / Justification
+Payment Method
+Invoice / Bill No
+Approved By
+Approval Date
+Remarks
+
+Requirements:
+
+Same column ordering.
+Same column headings.
+Appropriate date formatting.
+Indian Rupee formatting.
+USD formatting where relevant.
+Filters.
+Borders.
+Professional header formatting.
+Total row.
+Excel formulas for applicable newly calculated transactions.
+Preserve original imported values.
+
+The export must not silently replace historical figures with newly calculated amounts.
+
+18.2 Export Format B: Professional Report
+
+Filename:
+
+IT_Expenses_Professional_Report.xlsx
+
+Worksheets:
+
+Dashboard Summary.
+All Transactions.
+Courier Labels.
+Wax Rolls.
+Barcode Rolls.
+Barcode Wax Rolls.
+Render Hosting.
+MongoDB.
+Other Bills.
+Vendors.
+Inventory.
+Assets.
+Subscriptions.
+GST Summary.
+Monthly Reports.
+Financial-Year Reports.
+
+Requirements:
+
+Professional formatting.
+Formulas.
+Summary totals.
+Category breakdown.
+Vendor breakdown.
+Currency breakdown.
+GST breakdown.
+Financial-year summary.
+Filters.
+Proper currency formatting.
+18.3 Export Filters
+
+Allow export by:
+
+All records.
+Selected category.
+Vendor.
+Month.
+Financial year.
+Custom date range.
+Payment status.
+Approval status.
+
+Excel generation should use a dedicated backend service such as ExcelJS.
+
+19. Notifications and Alerts
+
+The system must provide an in-app notification center.
+
+19.1 Notification Types
+New expense submitted.
+Approval pending.
+Expense approved.
+Expense rejected.
+Payment pending.
+Invoice duplicate detected.
+Low inventory.
+Urgent reorder.
+Subscription renewal approaching.
+Subscription payment failed.
+Warranty expiry approaching.
+Data import completed.
+Data import failed.
+Backup completed.
+Backup failed.
+
+Notifications should have:
+
+Title.
+Description.
+Type.
+Related record.
+Creation date.
+Read/unread status.
+
+Email notifications may be added through a configurable provider.
+
+20. Audit History
+
+All important activities must be recorded.
+
+20.1 Audited Actions
+Expense created.
+Expense edited.
+Expense cancelled.
+Expense reversed.
+Expense submitted.
+Expense approved.
+Expense rejected.
+Payment recorded.
+Invoice uploaded.
+Invoice replaced.
+Inventory received.
+Inventory issued.
+Inventory adjusted.
+Asset assigned.
+Asset returned.
+Subscription updated.
+Excel imported.
+Excel exported.
+User created.
+Permission changed.
+GST setting changed.
+20.2 Audit Information
+User ID.
+Action.
+Record ID.
+Old value.
+New value.
+Timestamp.
+IP or session information where appropriate.
+
+Audit records must be protected against ordinary user editing and deletion.
+
+21. Global Search
+
+The application must provide a centralized search feature.
+
+Users should be able to search by:
+
+Product name.
+Vendor name.
+Invoice number.
+Expense number.
+Purchase date.
+Employee name.
+Category.
+Subscription name.
+Asset number.
+SKU.
+Serial number.
+
+Search results must respect user permissions.
+
+22. Data Validation
+
+Validation must occur on both frontend and backend.
+
+22.1 Expense Validation
+Required product name.
+Valid purchase date.
+Valid quantity where applicable.
+Valid unit price where applicable.
+Valid currency.
+Valid exchange rate for foreign currency.
+Valid GST rate.
+Valid invoice amount.
+Valid vendor.
+Valid invoice reference where required.
+22.2 Financial Validation
+Negative amounts require authorized adjustment handling.
+GST calculations must be checked.
+Invoice total must be compared against calculated total.
+Exchange rate must be valid.
+Manual tax differences must be flagged.
+Rounding differences must be recorded.
+22.3 Data Quality Warnings
+
+Examples:
+
+Quantity missing.
+Invoice number missing.
+Vendor missing.
+Tax amount inconsistent.
+Invoice total mismatch.
+Date format ambiguous.
+Possible duplicate.
+Currency not identified.
+
+Users must be able to save legitimate exceptions with appropriate warnings and explanations.
+
+23. Authentication and Security
+23.1 Authentication
+Secure login.
+Password hashing.
+Session management.
+Refresh-token rotation.
+Logout.
+Password reset.
+Account activation and deactivation.
+23.2 Authorization
+
+Backend role-based access control must apply to every protected route.
+
+23.3 File Security
+Private invoice storage.
+File type validation.
+File size limits.
+Malware scanning where available.
+Authorized downloads.
+No public invoice URLs.
+23.4 Data Security
+HTTPS.
+Secure environment variables.
+Restricted MongoDB access.
+Database backups.
+Audit logs.
+Rate limiting.
+Input sanitization.
+Protection against common web vulnerabilities.
+24. Backup and Recovery
+24.1 Database Backups
+
+The system must support automated backups.
+
+Recommended configuration:
+
+Daily backup.
+Weekly backup retention.
+Monthly backup retention.
+Encrypted backup storage.
+Backup success/failure notifications.
+24.2 Invoice Backups
+
+Uploaded invoices must be backed up separately from database metadata.
+
+24.3 Recovery
+
+The system must provide a documented restoration process.
+
+A backup is only considered successful after its integrity is checked and restoration has been tested periodically.
+
+25. Online and Local Deployment
+25.1 Recommended Technology Stack
+Layer	Technology
+Frontend	React + TypeScript
+UI	Tailwind CSS
+Components	Shadcn/UI
+Backend	Node.js + Express
+Language	TypeScript
+Database	MongoDB
+ODM	Mongoose
+Excel	ExcelJS
+Validation	Zod
+Charts	Recharts
+Authentication	JWT
+Document storage	Private object storage
+Hosting	Render or equivalent
+Local environment	Docker Compose
+25.2 Online Environment
+Hosted frontend.
+Hosted backend.
+MongoDB Atlas.
+Private invoice storage.
+HTTPS.
+Centralized backups.
+25.3 Local Environment
+Local application server.
+Local browser access.
+Configurable MongoDB connection.
+Local document storage.
+25.4 Database Strategy
+
+Recommended production configuration:
+
+One centralized MongoDB database for all company users and environments.
+
+Local and online application instances should connect through secure backend services to the same central data source where possible.
+
+Separate local databases may be used for development and testing.
+
+Offline synchronization is not required in the initial release.
+
+26. Non-Functional Requirements
+26.1 Performance
+Dashboard should load efficiently.
+Expense lists must use pagination.
+Search should use appropriate MongoDB indexes.
+Excel exports should support larger datasets without exhausting server memory.
+Long-running imports should use background processing where necessary.
+26.2 Reliability
+Transactions must not be partially saved.
+Inventory changes must be atomic.
+Duplicate invoice checks must be reliable.
+Failed imports must be recoverable.
+Payment and approval records must remain consistent.
+26.3 Usability
+Responsive desktop, tablet and mobile design.
+Clear navigation.
+Consistent category page layouts.
+Easy bill upload.
+Search and filtering on all relevant pages.
+Clear status indicators.
+Useful validation messages.
+26.4 Maintainability
+Modular application architecture.
+Reusable UI components.
+Centralized business logic.
+Separate financial calculation services.
+API documentation.
+Automated tests.
+Version-controlled database migrations or migration scripts.
+27. Suggested Project Folder Structure
+text
+it-expense-management/
+│
+├── frontend/
+│   └── src/
+│       ├── components/
+│       ├── layouts/
+│       ├── pages/
+│       │   ├── Dashboard/
+│       │   ├── Transactions/
+│       │   ├── CourierLabels/
+│       │   ├── WaxRolls/
+│       │   ├── BarcodeRolls/
+│       │   ├── BarcodeWaxRolls/
+│       │   ├── Render/
+│       │   ├── MongoDB/
+│       │   ├── OtherBills/
+│       │   ├── Approvals/
+│       │   ├── Vendors/
+│       │   ├── Inventory/
+│       │   ├── Assets/
+│       │   ├── Subscriptions/
+│       │   ├── Reports/
+│       │   └── Settings/
+│       ├── services/
+│       ├── hooks/
+│       ├── types/
+│       └── utils/
+│
+├── backend/
+│   └── src/
+│       ├── config/
+│       ├── models/
+│       ├── controllers/
+│       ├── routes/
+│       ├── middleware/
+│       ├── validators/
+│       ├── services/
+│       │   ├── expenses/
+│       │   ├── gst/
+│       │   ├── currency/
+│       │   ├── invoices/
+│       │   ├── categorization/
+│       │   ├── inventory/
+│       │   ├── approvals/
+│       │   ├── subscriptions/
+│       │   ├── reports/
+│       │   ├── imports/
+│       │   └── exports/
+│       ├── jobs/
+│       ├── utils/
+│       └── app.ts
+│
+├── scripts/
+├── tests/
+├── docker-compose.yml
+├── .env.example
+├── README.md
+└── package.json
+
+28. Development Roadmap
+
+Development must follow phases so each major feature can be tested before the next phase begins.
+
+Phase 1: Foundation
+Project setup.
+Frontend configuration.
+Backend configuration.
+MongoDB connection.
+User authentication.
+Role-based permissions.
+Admin dashboard layout.
+Base database models.
+
+Deliverable: Working application foundation.
+
+Phase 2: Expense Management
+Add expense.
+Edit expense.
+Expense details.
+Centralized transaction ledger.
+Category configuration.
+Separate live category pages.
+Search and filters.
+
+Deliverable: Complete expense management system.
+
+Phase 3: Financial Calculation Engine
+Automatic GST.
+Manual GST.
+Inclusive/exclusive pricing.
+CGST/SGST/IGST.
+Currency conversion.
+Decimal precision.
+Financial validation.
+
+Deliverable: Reliable financial calculation module.
+
+Phase 4: Excel Import and Export
+Existing spreadsheet import.
+Data mapping.
+Import validation.
+Duplicate detection.
+Import history.
+Original Excel export.
+Professional Excel export.
+Category-wise exports.
+
+Deliverable: Full Excel integration.
+
+Phase 5: Invoice and Approval Management
+Invoice uploads.
+Document storage.
+OCR extraction.
+Automatic categorization.
+Approval workflow.
+Approval notifications.
+Payment tracking.
+
+Deliverable: Purchase approval and invoice management.
+
+Phase 6: Inventory and Assets
+Consumable stock management.
+Stock transactions.
+Reorder alerts.
+Asset register.
+Asset assignment.
+Warranty tracking.
+Purchase price comparison.
+
+Deliverable: IT resource management.
+
+Phase 7: Subscription and Vendor Management
+Render subscription.
+MongoDB subscription.
+Other subscriptions.
+Recurring reminders.
+Vendor management.
+Vendor analytics.
+Purchase history.
+
+Deliverable: Subscription and supplier management.
+
+Phase 8: Analytics and Reporting
+Dashboard calculations.
+Monthly reports.
+Financial-year reports.
+GST reports.
+Vendor reports.
+Category reports.
+Inventory reports.
+Subscription reports.
+
+Deliverable: Complete reporting system.
+
+Phase 9: Security and Deployment
+Audit logging.
+Backups.
+Security testing.
+Performance testing.
+Online deployment.
+Local deployment.
+Data migration verification.
+User acceptance testing.
+
+Deliverable: Production-ready application.
+
+29. Functional Acceptance Criteria
+
+The application will be considered functionally complete when the following requirements pass testing.
+
+ID	Acceptance criteria
+AC-01	Admin can securely log in.
+AC-02	Employees can submit purchase requests.
+AC-03	Approvers can approve and reject requests.
+AC-04	New expenses are saved in MongoDB.
+AC-05	Every expense appears in the master ledger.
+AC-06	Category transactions appear on their corresponding pages.
+AC-07	Multi-product invoices create correctly linked line items.
+AC-08	GST calculations work in automatic and manual modes.
+AC-09	Currency conversion preserves original values and rates.
+AC-10	Excel import supports the existing spreadsheet.
+AC-11	Excel import reports errors and possible duplicates.
+AC-12	Original-format Excel export preserves column order.
+AC-13	Professional export contains category and financial reports.
+AC-14	Received purchases update inventory correctly.
+AC-15	Inventory alerts trigger at configured thresholds.
+AC-16	Assets can be assigned and tracked.
+AC-17	Subscription reminders work according to configured dates.
+AC-18	Vendor history updates with transactions.
+AC-19	Dashboard figures update from saved transactions.
+AC-20	Audit history records important changes.
+AC-21	Global search returns permitted records.
+AC-22	Duplicate detection flags potential duplicate invoices.
+AC-23	Monthly and financial-year reports calculate correctly.
+AC-24	Database and invoice backups can be restored.
+AC-25	Online and local environments operate correctly.
+30. Business Rules and Important Data Integrity Decisions
+
+These rules are mandatory.
+
+One purchase must have one canonical transaction identity.
+Category pages must be filtered views of shared records.
+A multi-item invoice must have one invoice record and multiple linked line items.
+Approval status, payment status and goods-received status must be independent.
+Approved purchases must not automatically increase inventory.
+Inventory increases only when goods are received.
+Expected recurring expenses must not be counted as actual paid expenses.
+Historical exchange rates must not be overwritten.
+Historical invoice values must be preserved.
+GST must be configurable and must not be assumed to be 18% for all purchases.
+Manual invoice amounts must not be silently changed by automatic calculations.
+Historical data corrections must be auditable.
+Deletion of completed financial transactions must use an authorized reversal or cancellation process.
+Excel exports must not duplicate transactions.
+Dashboard totals must use defined financial reporting rules.
+Every transaction must retain its source invoice and vendor reference when available.
+Imported historical expenses must retain their original approval and payment information.
+31. Initial Data Migration
+
+The existing expense spreadsheet supplied for this project will be used as the initial historical dataset.
+
+The migration should:
+
+Import all valid historical transactions.
+Preserve original amounts.
+Preserve invoice numbers.
+Preserve vendor names.
+Preserve dates.
+Preserve approval information.
+Map products to the appropriate categories.
+Identify recurring services.
+Identify hardware purchases.
+Identify consumable purchases.
+Flag ambiguous records.
+
+The original spreadsheet should remain available as the source document.
+
+The separate category-page examples supplied by the user should be treated as desired presentation formats and product tracking requirements, not as an independent source of additional purchases.
+
+If category sample data conflicts with the original transaction spreadsheet, the application must flag the conflict instead of adding duplicate purchases.
+
+A reconciliation report must compare:
+
+Original transaction count.
+Imported transaction count.
+Original total amounts.
+Imported total amounts.
+Missing records.
+Duplicate records.
+Unresolved discrepancies.
+32. Future Enhancements
+
+The following may be considered after the core release:
+
+WhatsApp notifications.
+Email-based approval.
+Mobile application.
+Barcode scanning.
+QR-coded asset labels.
+Advanced invoice OCR.
+AI-assisted vendor and product matching.
+Purchase order generation.
+Budget forecasting.
+Department-wise budgets.
+Vendor payment reminders.
+Advanced accounting integrations.
+Offline synchronization.
+Multi-department expansion.
+
+These must not delay the essential expense, GST, inventory, import/export and approval functionality.
+
+33. Final Product Definition
+
+The IT Expense & Resource Management System must function as a centralized financial and operational management platform for the IT department.
+
+It must combine:
+
+Expense management.
+Individual category tracking.
+Centralized transaction management.
+Automatic bill extraction.
+GST and currency calculations.
+Invoice management.
+Approval workflows.
+Vendor management.
+Inventory management.
+Asset management.
+Subscription management.
+Payment tracking.
+Financial reporting.
+Excel integration.
+Audit history.
+Notifications.
+Secure online and local access.
+
+The most important requirement is that all modules must work from the same centralized MongoDB data.
+
+A new purchase should be entered or uploaded once, and all relevant category pages, transaction records, inventory information, vendor histories, subscription records and dashboards should update according to the transaction's actual status.
+
+The application must preserve historical data, maintain financial accuracy and provide a reliable record of every IT department purchase.
+
+Final development principle: Build one integrated system, not multiple disconnected expense spreadsheets.

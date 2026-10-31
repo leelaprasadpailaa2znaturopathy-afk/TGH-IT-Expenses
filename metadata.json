@@ -1,0 +1,6 @@
+{
+  "name": "IT Expense & Resource Management System",
+  "description": "Centralized IT department expense, asset, inventory and subscription management system with MongoDB-backed ledger, GraphQL API, team collaboration, and automated bill categorization.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
