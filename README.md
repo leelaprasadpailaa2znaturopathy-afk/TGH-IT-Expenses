@@ -1,4 +1,4 @@
-﻿# IT Expense & Resource Management
+# TGH IT Expense
 
 ## Configure MongoDB Atlas
 
@@ -11,3 +11,4 @@
 The first run creates the administrator in MongoDB only if the users collection is empty. Create employee accounts in User Management; each account receives a password at creation. The old `.db_state.json` demo store has been removed. Application records use MongoDB collections and are not seeded with sample records.
 
 MongoDB credentials are server-only. Do not put the connection string in a `VITE_` variable or commit `.env`.
+

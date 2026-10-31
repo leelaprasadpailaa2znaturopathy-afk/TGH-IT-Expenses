@@ -100,7 +100,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
               <span className="text-xs text-slate-500 dark:text-slate-400">Department: Information Technology</span>
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100 tracking-tight">
-              IT Expense &amp; Resource Executive Dashboard
+              TGH IT Expense Dashboard
             </h2>
             <p className="text-slate-500 dark:text-slate-400 text-xs mt-1 max-w-2xl leading-relaxed">
               Real-time ledger with automated USD exchange rate lock per date, live stock levels, and fixed hardware tracking.

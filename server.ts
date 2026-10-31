@@ -401,10 +401,11 @@ async function startServer() {
   }
 
   app.listen(PORT, '0.0.0.0', () => {
-    console.log(`🚀 IT Expense & Resource System running at http://localhost:${PORT}`);
+    console.log(`🚀 TGH IT Expense running at http://localhost:${PORT}`);
   });
 }
 
 startServer().catch((err) => {
   console.error('Failed to start server:', err);
 });
+
