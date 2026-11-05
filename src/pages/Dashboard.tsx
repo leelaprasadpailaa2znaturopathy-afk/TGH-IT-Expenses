@@ -11,6 +11,7 @@ import {
   Cloud,
   DollarSign,
   FileSpreadsheet,
+  CalendarDays,
 } from 'lucide-react';
 import { ExpenseItem, InventoryItem, Subscription, Asset, User } from '../types';
 
@@ -86,6 +87,57 @@ export const Dashboard: React.FC<DashboardProps> = ({
   const recentExpenses = [...filteredExpenses]
     .sort((a, b) => b.purchaseDate.localeCompare(a.purchaseDate) || b.createdAt.localeCompare(a.createdAt))
     .slice(0, 5);
+  const renewalReminders = subscriptions
+    .filter((subscription) => {
+      if (subscription.subscriptionStatus !== 'active' || subscription.billingCycle !== 'monthly') return false;
+      const provider = `${subscription.name} ${subscription.vendor} ${subscription.serviceCategory}`.toLowerCase();
+      return !provider.includes('render') && !provider.includes('mongo');
+    })
+    .flatMap((subscription) => {
+      const dateParts = subscription.nextRenewalDate.match(/^(\d{4})-(\d{2})-(\d{2})(?:$|T)/);
+      if (!dateParts) return [];
+
+      const [, yearText, monthText, dayText] = dateParts;
+      const year = Number(yearText);
+      const month = Number(monthText);
+      const day = Number(dayText);
+      const renewalDate = new Date(year, month - 1, day);
+      if (
+        renewalDate.getFullYear() !== year
+        || renewalDate.getMonth() !== month - 1
+        || renewalDate.getDate() !== day
+      ) return [];
+
+      const todayUtc = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
+      const renewalUtc = Date.UTC(year, month - 1, day);
+      const daysRemaining = Math.round((renewalUtc - todayUtc) / 86_400_000);
+      if (daysRemaining > 7) return [];
+
+      return [{ ...subscription, renewalDate, daysRemaining }];
+    })
+    .sort((a, b) => a.daysRemaining - b.daysRemaining);
+  const monthlyBillReminders = [
+    { category: 'render', name: 'Render Hosting', icon: Cloud, destination: 'category-render' },
+    { category: 'mongodb', name: 'MongoDB Atlas', icon: Database, destination: 'category-mongodb' },
+  ]
+    .filter(({ category }) => !expenses.some((expense) => {
+      if (expense.category !== category || expense.paymentStatus !== 'paid') return false;
+
+      const paymentDate = expense.paymentDate || expense.purchaseDate;
+      const dateParts = paymentDate.match(/^(\d{4})-(\d{2})-(\d{2})(?:$|T)/);
+      if (!dateParts) return false;
+
+      const [, yearText, monthText, dayText] = dateParts;
+      const year = Number(yearText);
+      const month = Number(monthText);
+      const day = Number(dayText);
+      const paidDate = new Date(year, month - 1, day);
+      return paidDate.getFullYear() === year
+        && paidDate.getMonth() === month - 1
+        && paidDate.getDate() === day
+        && `${yearText}-${monthText}` === currentMonthPrefix;
+    }));
+  const isMonthlyBillOverdue = now.getDate() >= 5;
 
   return (
     <div className="space-y-6">
@@ -131,6 +183,200 @@ export const Dashboard: React.FC<DashboardProps> = ({
           </div>
         </div>
       </div>
+
+      {currentUser.role === 'admin' && monthlyBillReminders.length > 0 && (
+        <section
+          aria-labelledby="monthly-bill-reminder-heading"
+          aria-live="polite"
+          className={`overflow-hidden rounded-2xl border shadow-sm ${
+            isMonthlyBillOverdue
+              ? 'border-rose-300 bg-rose-50 dark:border-rose-500/40 dark:bg-rose-950/30'
+              : 'border-amber-300 bg-amber-50 dark:border-amber-500/30 dark:bg-amber-950/25'
+          }`}
+        >
+          <div className="flex flex-col gap-4 p-4 sm:p-5">
+            <div className="flex items-start gap-3">
+              <span
+                className={`mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border ${
+                  isMonthlyBillOverdue
+                    ? 'border-rose-300 bg-rose-100 text-rose-700 motion-safe:animate-pulse dark:border-rose-500/40 dark:bg-rose-500/15 dark:text-rose-300'
+                    : 'border-amber-300 bg-amber-100 text-amber-700 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-300'
+                }`}
+              >
+                <AlertTriangle className="h-4 w-4" aria-hidden="true" />
+              </span>
+              <div>
+                <div className="flex flex-wrap items-center gap-2">
+                  <h3
+                    id="monthly-bill-reminder-heading"
+                    className={`text-sm font-bold ${
+                      isMonthlyBillOverdue
+                        ? 'text-rose-950 dark:text-rose-100'
+                        : 'text-amber-950 dark:text-amber-100'
+                    }`}
+                  >
+                    {isMonthlyBillOverdue ? 'Monthly bills need immediate attention' : 'Monthly bills due by the 5th'}
+                  </h3>
+                  <span
+                    className={`rounded-full border bg-white/70 px-2 py-0.5 text-[10px] font-semibold dark:bg-slate-950/40 ${
+                      isMonthlyBillOverdue
+                        ? 'border-rose-300 text-rose-800 dark:border-rose-500/40 dark:text-rose-200'
+                        : 'border-amber-300 text-amber-800 dark:border-amber-500/30 dark:text-amber-200'
+                    }`}
+                  >
+                    {isMonthlyBillOverdue
+                      ? now.getDate() === 5 ? 'Due today' : 'Overdue'
+                      : `${5 - now.getDate()} ${5 - now.getDate() === 1 ? 'day' : 'days'} left`}
+                  </span>
+                </div>
+                <p className={`mt-0.5 text-xs leading-relaxed ${
+                  isMonthlyBillOverdue
+                    ? 'text-rose-800 dark:text-rose-200/80'
+                    : 'text-amber-800 dark:text-amber-200/80'
+                }`}>
+                  Record each bill as paid in its category to clear this reminder.
+                </p>
+              </div>
+            </div>
+
+            <ul className="grid grid-cols-1 gap-2.5 sm:grid-cols-2" aria-label="Unpaid monthly service bills">
+              {monthlyBillReminders.map(({ category, name, icon: Icon, destination }) => {
+                const isDueToday = now.getDate() === 5;
+                const status = isMonthlyBillOverdue
+                  ? isDueToday
+                    ? 'Due today'
+                    : `Overdue by ${now.getDate() - 5} ${now.getDate() - 5 === 1 ? 'day' : 'days'}`
+                  : `Due in ${5 - now.getDate()} ${5 - now.getDate() === 1 ? 'day' : 'days'}`;
+
+                return (
+                  <li
+                    key={category}
+                    className={`flex min-w-0 items-center gap-3 rounded-xl border bg-white/80 px-3.5 py-3 dark:bg-slate-900/70 ${
+                      isMonthlyBillOverdue
+                        ? 'border-rose-200 dark:border-rose-500/25'
+                        : 'border-amber-200 dark:border-amber-500/20'
+                    }`}
+                  >
+                    <Icon
+                      className={`h-4 w-4 shrink-0 ${
+                        category === 'render'
+                          ? 'text-cyan-600 dark:text-cyan-400'
+                          : 'text-emerald-600 dark:text-emerald-400'
+                      }`}
+                      aria-hidden="true"
+                    />
+                    <div className="min-w-0">
+                      <p className="truncate text-xs font-bold text-slate-900 dark:text-slate-100">{name}</p>
+                      <p className="mt-0.5 text-[11px] text-slate-600 dark:text-slate-300">Deadline: 5th of this month</p>
+                    </div>
+                    <span
+                      className={`ml-auto shrink-0 rounded-full px-2 py-1 text-[10px] font-semibold ${
+                        isMonthlyBillOverdue
+                          ? 'bg-rose-100 text-rose-800 dark:bg-rose-500/15 dark:text-rose-200'
+                          : 'bg-amber-100 text-amber-900 dark:bg-amber-500/15 dark:text-amber-200'
+                      }`}
+                    >
+                      {status}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => onNavigate(destination)}
+                      aria-label={`View ${name} expenses`}
+                      className="inline-flex min-h-8 shrink-0 items-center gap-1 rounded-lg px-2 text-[11px] font-semibold text-slate-700 transition-colors hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-600 dark:text-slate-200 dark:hover:bg-slate-800"
+                    >
+                      View <ArrowRight className="h-3 w-3" aria-hidden="true" />
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        </section>
+      )}
+
+      {currentUser.role === 'admin' && renewalReminders.length > 0 && (
+        <section
+          aria-labelledby="renewal-reminder-heading"
+          aria-live="polite"
+          className="overflow-hidden rounded-2xl border border-amber-300 bg-amber-50 shadow-sm dark:border-amber-500/30 dark:bg-amber-950/25"
+        >
+          <div className="flex flex-col gap-4 p-4 sm:p-5">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex items-start gap-3">
+                <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-amber-300 bg-amber-100 text-amber-700 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-300">
+                  <AlertTriangle className="h-4 w-4" aria-hidden="true" />
+                </span>
+                <div>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <h3 id="renewal-reminder-heading" className="text-sm font-bold text-amber-950 dark:text-amber-100">
+                      Subscription renewals need planning
+                    </h3>
+                    <span className="rounded-full border border-amber-300 bg-white/70 px-2 py-0.5 text-[10px] font-semibold text-amber-800 dark:border-amber-500/30 dark:bg-amber-950/60 dark:text-amber-200">
+                      {renewalReminders.length} {renewalReminders.length === 1 ? 'renewal' : 'renewals'}
+                    </span>
+                  </div>
+                  <p className="mt-0.5 text-xs leading-relaxed text-amber-800 dark:text-amber-200/80">
+                    Arrange purchase before renewal to keep services uninterrupted.
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => onNavigate('subscriptions')}
+                className="inline-flex min-h-9 shrink-0 items-center justify-center gap-1.5 self-start rounded-xl border border-amber-400 bg-white px-3 py-2 text-xs font-semibold text-amber-900 transition-colors hover:bg-amber-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-600 focus-visible:ring-offset-2 dark:border-amber-500/40 dark:bg-slate-900 dark:text-amber-100 dark:hover:bg-amber-950/70 dark:focus-visible:ring-offset-slate-950 sm:self-center"
+              >
+                View subscriptions <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
+              </button>
+            </div>
+
+            <ul
+              aria-label="Monthly subscription renewals due within seven days or overdue"
+              className="flex snap-x snap-mandatory gap-2.5 overflow-x-auto pb-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-600 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-amber-950"
+              tabIndex={0}
+            >
+              {renewalReminders.map((subscription) => {
+                const isOverdue = subscription.daysRemaining < 0;
+                const isDueToday = subscription.daysRemaining === 0;
+                const status = isOverdue
+                  ? `Overdue by ${Math.abs(subscription.daysRemaining)} ${Math.abs(subscription.daysRemaining) === 1 ? 'day' : 'days'}`
+                  : isDueToday
+                    ? 'Due today'
+                    : `${subscription.daysRemaining} ${subscription.daysRemaining === 1 ? 'day' : 'days'} left`;
+
+                return (
+                  <li
+                    key={subscription._id}
+                    className="flex min-w-[min(15rem,85vw)] snap-start items-center gap-3 rounded-xl border border-amber-200 bg-white/80 px-3.5 py-3 dark:border-amber-500/20 dark:bg-slate-900/70"
+                  >
+                    <CalendarDays
+                      className={`h-4 w-4 shrink-0 ${isOverdue ? 'text-rose-600 dark:text-rose-400' : 'text-amber-600 dark:text-amber-400'}`}
+                      aria-hidden="true"
+                    />
+                    <div className="min-w-0">
+                      <p className="truncate text-xs font-bold text-slate-900 dark:text-slate-100">{subscription.name}</p>
+                      <p className="mt-0.5 text-[11px] text-slate-600 dark:text-slate-300">
+                        {subscription.renewalDate.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
+                      </p>
+                    </div>
+                    <span
+                      className={`ml-auto shrink-0 rounded-full px-2 py-1 text-[10px] font-semibold ${
+                        isOverdue
+                          ? 'bg-rose-100 text-rose-800 dark:bg-rose-500/15 dark:text-rose-300'
+                          : 'bg-amber-100 text-amber-900 dark:bg-amber-500/15 dark:text-amber-200'
+                      }`}
+                    >
+                      {status}
+                    </span>
+                  </li>
+                );
+              })}
+            </ul>
+            <p className="-mt-2 text-[10px] text-amber-800/80 dark:text-amber-200/70 sm:hidden">
+              Swipe to view all renewal reminders.
+            </p>
+          </div>
+        </section>
+      )}
 
       {/* KPI Cards Grid */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
