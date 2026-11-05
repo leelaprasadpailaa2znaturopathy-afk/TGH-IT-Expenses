@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useLayoutEffect } from 'react';
 import { Header } from './components/Header';
 import { Sidebar } from './components/Sidebar';
 import { ExpenseModal } from './components/ExpenseModal';
@@ -68,9 +68,15 @@ export default function App() {
   };
 
   // Theme Management (Light and Dark Mode)
-  const [theme, setTheme] = useState<'light' | 'dark'>('dark');
+  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
+    if (typeof window === 'undefined') return 'dark';
+    const saved = localStorage.getItem('it_erp_theme') as 'light' | 'dark' | null;
+    if (saved) return saved;
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'dark';
+  });
 
-  useEffect(() => {
+  useLayoutEffect(() => {
+    localStorage.setItem('it_erp_theme', theme);
     if (theme === 'dark') {
       document.documentElement.classList.add('dark');
     } else {

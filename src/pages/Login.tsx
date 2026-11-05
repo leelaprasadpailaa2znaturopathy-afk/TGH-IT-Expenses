@@ -28,7 +28,7 @@ export const Login: React.FC<LoginProps> = ({ onLogin, theme, onToggleTheme }) =
 
   return (
     <div className="min-h-screen bg-[#f5f3ee] text-slate-900 dark:bg-[#0b1220] dark:text-slate-100 flex flex-col">
-      <header className="h-[76px] px-5 sm:px-10 lg:px-14 flex items-center justify-between bg-[#101a2d] text-white border-b border-white/10">
+      <header className="h-[76px] px-5 sm:px-10 lg:px-14 flex items-center justify-between bg-white dark:bg-[#101a2d] text-slate-900 dark:text-white border-b border-slate-200 dark:border-white/10">
         <a href="/" className="flex items-center gap-3.5" aria-label="TGH IT Expense home">
           <span className="w-12 h-12 p-1.5 rounded-xl bg-white flex items-center justify-center shrink-0">
             <img src="/tgh-logo-trim.png" alt="TGH Good Health logo" className="w-full h-full object-contain" />
@@ -51,7 +51,7 @@ export const Login: React.FC<LoginProps> = ({ onLogin, theme, onToggleTheme }) =
             <div className="inline-flex items-center gap-2 rounded-full border border-[#c8aa69]/45 bg-[#c8aa69]/10 px-3 py-1.5 text-[11px] font-semibold tracking-wide text-[#70591f] dark:text-[#e2c982]">
               <Activity className="w-3.5 h-3.5" /> INFORMATION TECHNOLOGY · OPERATIONS
             </div>
-            <div className="mt-9 mb-8 w-[min(100%,390px)] rounded-2xl border border-slate-200/80 bg-white px-6 py-5 shadow-sm dark:border-slate-700 dark:bg-white">
+            <div className="mt-9 mb-8 w-[min(100%,390px)] rounded-2xl border border-slate-200/80 bg-white px-6 py-5 shadow-sm dark:border-slate-700 dark:bg-[#111c2d]">
               <img src="/tgh-logo-trim.png" alt="TGH Good Health" className="block w-full h-[110px] object-contain" />
             </div>
             <h1 className="text-4xl sm:text-5xl lg:text-[3.5rem] leading-[1.08] font-semibold tracking-[-0.04em] text-[#14223a] dark:text-white">

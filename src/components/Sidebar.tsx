@@ -108,15 +108,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
       }`}
     >
       {/* Brand Header */}
-      <div className={`h-16 px-3 flex items-center justify-center border-b border-slate-700 bg-[#101a2d] text-white ${isCollapsed ? '' : 'justify-start px-4'}`}>
+      <div className={`h-16 px-3 flex items-center justify-center border-b border-slate-200 dark:border-slate-700 bg-white dark:bg-[#101a2d] text-slate-900 dark:text-white ${isCollapsed ? '' : 'justify-start px-4'}`}>
         <div className="flex items-center gap-3 overflow-hidden">
-          <div className="w-9 h-9 rounded-xl bg-white p-1 flex items-center justify-center shrink-0">
+          <div className="w-9 h-9 rounded-xl bg-slate-100 dark:bg-slate-800 p-1 flex items-center justify-center shrink-0 border border-slate-200 dark:border-slate-700">
             <img src="/tgh-logo-trim.png" alt="TGH Good Health logo" className="w-full h-full object-contain" />
           </div>
           {!isCollapsed && (
             <div className="leading-tight truncate">
-              <h1 className="font-bold text-sm text-white tracking-tight">TGH IT Expense</h1>
-              <p className="text-[10px] text-slate-400">Central Ledger &amp; Asset Management</p>
+              <h1 className="font-bold text-sm text-slate-900 dark:text-white tracking-tight">TGH IT Expense</h1>
+              <p className="text-[10px] text-slate-500 dark:text-slate-400">Central Ledger &amp; Asset Management</p>
             </div>
           )}
         </div>
